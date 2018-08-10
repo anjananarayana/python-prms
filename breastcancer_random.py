@@ -126,13 +126,13 @@ plt.savefig("image.png")
 #Train Model
 
 # Instantiate model with 1000 decision trees
-rf = RandomForestClassifier(n_estimators = 1000, random_state = 42)
+rf_bc = RandomForestClassifier(n_estimators = 1000, random_state = 42)
 # Train the model on training data
-rf.fit(train_features, train_labels);
+rf_bc.fit(train_features, train_labels);
 
 #Make Predictions on the Test Set
 # Use the forest's predict method on the test data
-predictions = rf.predict(test_features)
+predictions = rf_bc.predict(test_features)
 # Calculate the absolute errors
 errors = abs(predictions - test_labels)
 # Print out the mean absolute error (mae)
@@ -147,7 +147,7 @@ print('Accuracy:', round(accuracy, 2), '%.')
 
 #variable importance
 # Get numerical feature importances
-importances = list(rf.feature_importances_)
+importances = list(rf_bc.feature_importances_)
 # List of tuples with variable and importance
 feature_importances = [(feature, round(importance, 2)) for feature, importance in zip(feature_list, importances)]
 # Sort the feature importances by most important first
@@ -187,6 +187,27 @@ plt.bar(x_values, importances, orientation = 'vertical')
 plt.xticks(x_values, feature_list, rotation='vertical')
 # Axis labels and title
 plt.ylabel('Importance'); plt.xlabel('Variable'); plt.title('Variable Importances');
+
+#visualization plot for random  forest
+## Pull out one tree from the forest
+tree_bc = rf_bc.estimators_[5]
+export_graphviz(tree_bc, out_file = 'tree_bc.dot', feature_names = feature_list, rounded = True, precision = 1)
+# Use dot file to create a graph
+(graph, ) = pydot.graph_from_dot_file('tree_bc.dot')
+# Write graph to a png file
+graph.write_png('tree_bc.png')
+
+# Limit depth of tree to 3 levels
+rf_small_bc = RandomForestClassifier(n_estimators=10, max_depth = 3)
+rf_small_bc.fit(train_features, train_labels)
+# Extract the small tree
+tree_small = rf_small_bc.estimators_[5]
+# Save the tree as a png image
+export_graphviz(tree_small, out_file = 'final_tree.dot', feature_names = feature_list, rounded = True, precision = 1)
+(graph, ) = pydot.graph_from_dot_file('final_tree.dot')
+graph.write_png('final_tree.png');
+
+
 
 
 
