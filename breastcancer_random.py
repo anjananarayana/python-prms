@@ -27,6 +27,9 @@ print (sklearn.__version__)
 # Labels are the values we want to predict
 # Labels are the values we want to predict
 labels = np.array(bc['CancerType'])
+#labels_list=list(labels)
+class_names = bc['CancerType']
+labels_list = list(class_names)
 # Remove the labels from the features
 # axis 1 refers to the columns
 bc= bc.drop('CancerType', axis = 1)
@@ -171,11 +174,6 @@ print('Mean Absolute Error:', round(np.mean(errors), 2), 'degrees.')
 mape = np.mean(100 * (errors / test_labels))
 accuracy = 100 - mape
 print('Accuracy:', round(accuracy, 2), '%.')
-# Import matplotlib for plotting and use magic command for Jupyter Notebooks
-#%matplotlib inline
-# Set the style
-
-
 
 # Set the style
 plt.style.use('fivethirtyeight')
@@ -191,19 +189,19 @@ plt.ylabel('Importance'); plt.xlabel('Variable'); plt.title('Variable Importance
 #visualization plot for random  forest
 ## Pull out one tree from the forest
 tree_bc = rf_bc.estimators_[5]
-export_graphviz(tree_bc, out_file = 'tree_bc.dot', feature_names = feature_list, rounded = True, precision = 1)
+export_graphviz(tree_bc, out_file = 'tree_bc.dot', feature_names = feature_list, class_names=str(labels_list),rounded = True, precision = 1)
 # Use dot file to create a graph
 (graph, ) = pydot.graph_from_dot_file('tree_bc.dot')
 # Write graph to a png file
 graph.write_png('tree_bc.png')
 
 # Limit depth of tree to 3 levels
-rf_small_bc = RandomForestClassifier(n_estimators=10, max_depth = 3)
+rf_small_bc = RandomForestClassifier(n_estimators=10, max_depth = 5)
 rf_small_bc.fit(train_features, train_labels)
 # Extract the small tree
 tree_small = rf_small_bc.estimators_[5]
 # Save the tree as a png image
-export_graphviz(tree_small, out_file = 'final_tree.dot', feature_names = feature_list, rounded = True, precision = 1)
+export_graphviz(tree_small, out_file = 'final_tree.dot', feature_names = feature_list,class_names=str(labels_list), rounded = True, precision = 1)
 (graph, ) = pydot.graph_from_dot_file('final_tree.dot')
 graph.write_png('final_tree.png');
 
@@ -216,3 +214,4 @@ graph.write_png('final_tree.png');
 #link for this
 #https://towardsdatascience.com/random-forest-in-python-24d0893d51c0
 #http://dataaspirant.com/2017/06/26/random-forest-classifier-python-scikit-learn/
+#https://www.inertia7.com/projects/55
